@@ -101,12 +101,14 @@ CommandQueue::CommandQueue(vector< vector<BankState> > &states, ostream &dramsim
 	//
 	//countdown vector will have decrementing counters starting at tFAW
 	//  when the 0th element reaches 0, remove it
-	tFAWCountdown.reserve(NUM_RANKS);
+	//taohi added.
+	/*tFAWCountdown.reserve(NUM_RANKS);
 	for (size_t i=0;i<NUM_RANKS;i++)
 	{
 		//init the empty vectors here so we don't seg fault later
 		tFAWCountdown.push_back(vector<unsigned>());
 	}
+	*/
 }
 CommandQueue::~CommandQueue()
 {
@@ -165,16 +167,19 @@ bool CommandQueue::pop(BusPacket **busPacket)
 {
 	//this can be done here because pop() is called every clock cycle by the parent MemoryController
 	//	figures out the sliding window requirement for tFAW
-	//
+	//taohi added.
+	/*
 	//deal with tFAW book-keeping
 	//	each rank has it's own counter since the restriction is on a device level
 	for (size_t i=0;i<NUM_RANKS;i++)
 	{
 		//decrement all the counters we have going
+
 		for (size_t j=0;j<tFAWCountdown[i].size();j++)
 		{
 			tFAWCountdown[i][j]--;
 		}
+		
 
 		//the head will always be the smallest counter, so check if it has reached 0
 		if (tFAWCountdown[i].size()>0 && tFAWCountdown[i][0]==0)
@@ -182,6 +187,8 @@ bool CommandQueue::pop(BusPacket **busPacket)
 			tFAWCountdown[i].erase(tFAWCountdown[i].begin());
 		}
 	}
+	*/
+	
 
 	/* Now we need to find a packet to issue. When the code picks a packet, it will set
 		 *busPacket = [some eligible packet]
@@ -197,6 +204,7 @@ bool CommandQueue::pop(BusPacket **busPacket)
 		//if the memory controller set the flags signaling that we need to issue a refresh
 		if (refreshWaiting)
 		{
+			std::cout<<"xxxxxxxx in CommandQueue_pop_ClosePage_refreshWaiting."<<std::endl;
 			bool foundActiveOrTooEarly = false;
 			//look for an open bank
 			for (size_t b=0;b<NUM_BANKS;b++)
@@ -217,6 +225,9 @@ bool CommandQueue::pop(BusPacket **busPacket)
 							if (packet->busPacketType != ACTIVATE && isIssuable(packet))
 							{
 								*busPacket = packet;
+								//taohi added.
+								std::cout<<"taohixxxxxx";
+								packet->print();
 								queue.erase(queue.begin() + j);
 								sendingREF = true;
 							}
@@ -544,13 +555,15 @@ bool CommandQueue::pop(BusPacket **busPacket)
 		sendAct = true;
 		nextRankAndBank(nextRank, nextBank);
 	}
+//taohi
+	/*
 
 	//if its an activate, add a tfaw counter
 	if ((*busPacket)->busPacketType==ACTIVATE)
 	{
 		tFAWCountdown[(*busPacket)->rank].push_back(tFAW);
 	}
-
+*/
 	return true;
 }
 
@@ -626,138 +639,142 @@ bool CommandQueue::isIssuable(BusPacket *busPacket)
 {
 	switch (busPacket->busPacketType)
 	{
-	case REFRESH:
+        case REFRESH:
 
-		break;
-	case ACTIVATE:
-		if ((bankStates[busPacket->rank][busPacket->bank].currentBankState == Idle ||
-		        bankStates[busPacket->rank][busPacket->bank].currentBankState == Refreshing) &&
-		        currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextActivate &&
-		        tFAWCountdown[busPacket->rank].size() < 4)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-		break;
-	case WRITE:
-	case WRITE_P:
-		if (bankStates[busPacket->rank][busPacket->bank].currentBankState == RowActive &&
-		        currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextWrite &&
-		        busPacket->row == bankStates[busPacket->rank][busPacket->bank].openRowAddress &&
-		        rowAccessCounters[busPacket->rank][busPacket->bank] < TOTAL_ROW_ACCESSES)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-		break;
-	case READ_P:
-	case READ:
-		if (bankStates[busPacket->rank][busPacket->bank].currentBankState == RowActive &&
-		        currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextRead &&
-		        busPacket->row == bankStates[busPacket->rank][busPacket->bank].openRowAddress &&
-		        rowAccessCounters[busPacket->rank][busPacket->bank] < TOTAL_ROW_ACCESSES)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-		break;
-	case PRECHARGE:
-		if (bankStates[busPacket->rank][busPacket->bank].currentBankState == RowActive &&
-		        currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextPrecharge)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-		break;
-	default:
-		ERROR("== Error - Trying to issue a crazy bus packet type : ");
-		busPacket->print();
-		exit(0);
-	}
-	return false;
+            break;
+        case ACTIVATE:
+			/*
+            if ((bankStates[busPacket->rank][busPacket->bank].currentBankState == Idle ||
+                        bankStates[busPacket->rank][busPacket->bank].currentBankState == Refreshing) &&
+                    currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextActivate &&
+                    tFAWCountdown[busPacket->rank].size() < 4)
+             */
+              if ((bankStates[busPacket->rank][busPacket->bank].currentBankState == Idle ||bankStates[busPacket->rank][busPacket->bank].currentBankState == Refreshing) &&
+                    currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextActivate)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            break;
+        case WRITE:
+        case WRITE_P:
+            if (bankStates[busPacket->rank][busPacket->bank].currentBankState == RowActive &&
+                    currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextWrite &&
+                    busPacket->row == bankStates[busPacket->rank][busPacket->bank].openRowAddress &&
+                    rowAccessCounters[busPacket->rank][busPacket->bank] < TOTAL_ROW_ACCESSES)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            break;
+        case READ_P:
+        case READ:
+            if (bankStates[busPacket->rank][busPacket->bank].currentBankState == RowActive &&
+                    currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextRead &&
+                    busPacket->row == bankStates[busPacket->rank][busPacket->bank].openRowAddress &&
+                    rowAccessCounters[busPacket->rank][busPacket->bank] < TOTAL_ROW_ACCESSES)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            break;
+        case PRECHARGE:
+            if (bankStates[busPacket->rank][busPacket->bank].currentBankState == RowActive &&
+                    currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextPrecharge)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            break;
+        default:
+            ERROR("== Error - Trying to issue a crazy bus packet type : ");
+            busPacket->print();
+            exit(0);
+    }
+    return false;
 }
 
 //figures out if a rank's queue is empty
 bool CommandQueue::isEmpty(unsigned rank)
 {
-	if (queuingStructure == PerRank)
-	{
-		return queues[rank][0].empty();
-	}
-	else if (queuingStructure == PerRankPerBank)
-	{
-		for (size_t i=0;i<NUM_BANKS;i++)
-		{
-			if (!queues[rank][i].empty()) return false;
-		}
-		return true;
-	}
-	else
-	{
-		DEBUG("Invalid Queueing Stucture");
-		abort();
-	}
+    if (queuingStructure == PerRank)
+    {
+        return queues[rank][0].empty();
+    }
+    else if (queuingStructure == PerRankPerBank)
+    {
+        for (size_t i=0;i<NUM_BANKS;i++)
+        {
+            if (!queues[rank][i].empty()) return false;
+        }
+        return true;
+    }
+    else
+    {
+        DEBUG("Invalid Queueing Stucture");
+        abort();
+    }
 }
 
 //tells the command queue that a particular rank is in need of a refresh
 void CommandQueue::needRefresh(unsigned rank)
 {
-	refreshWaiting = true;
-	refreshRank = rank;
+    refreshWaiting = true;
+    refreshRank = rank;
 }
 
 void CommandQueue::nextRankAndBank(unsigned &rank, unsigned &bank)
 {
-	if (schedulingPolicy == RankThenBankRoundRobin)
-	{
-		rank++;
-		if (rank == NUM_RANKS)
-		{
-			rank = 0;
-			bank++;
-			if (bank == NUM_BANKS)
-			{
-				bank = 0;
-			}
-		}
-	}
-	//bank-then-rank round robin
-	else if (schedulingPolicy == BankThenRankRoundRobin)
-	{
-		bank++;
-		if (bank == NUM_BANKS)
-		{
-			bank = 0;
-			rank++;
-			if (rank == NUM_RANKS)
-			{
-				rank = 0;
-			}
-		}
-	}
-	else
-	{
-		ERROR("== Error - Unknown scheduling policy");
-		exit(0);
-	}
+    if (schedulingPolicy == RankThenBankRoundRobin)
+    {
+        rank++;
+        if (rank == NUM_RANKS)
+        {
+            rank = 0;
+            bank++;
+            if (bank == NUM_BANKS)
+            {
+                bank = 0;
+            }
+        }
+    }
+    //bank-then-rank round robin
+    else if (schedulingPolicy == BankThenRankRoundRobin)
+    {
+        bank++;
+        if (bank == NUM_BANKS)
+        {
+            bank = 0;
+            rank++;
+            if (rank == NUM_RANKS)
+            {
+                rank = 0;
+            }
+        }
+    }
+    else
+    {
+        ERROR("== Error - Unknown scheduling policy");
+        exit(0);
+    }
 
 }
 
 void CommandQueue::update()
 {
-	//do nothing since pop() is effectively update(),
-	//needed for SimulatorObject
-	//TODO: make CommandQueue not a SimulatorObject
+    //do nothing since pop() is effectively update(),
+    //needed for SimulatorObject
+    //TODO: make CommandQueue not a SimulatorObject
 }

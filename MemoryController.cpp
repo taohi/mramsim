@@ -153,8 +153,8 @@ void MemoryController::attachRanks(vector<Rank *> *ranks)
 void MemoryController::update()
 {
 
-	//PRINT(" ------------------------- [" << currentClockCycle << "] -------------------------");
-
+	//PRINT(" MC:update()------------Cycle:- [" << currentClockCycle << "] ------------------------------");
+	
 	//update bank states
 	for (size_t i=0;i<NUM_RANKS;i++)
 	{
@@ -211,6 +211,8 @@ void MemoryController::update()
 			//inform upper levels that a write is done
 			if (parentMemorySystem->WriteDataDone!=NULL)
 			{
+				PRINT("WriteDataDone Called.");
+				//taohi:No Callback function is called.Because we didn't register.
 				(*parentMemorySystem->WriteDataDone)(parentMemorySystem->systemID,outgoingDataPacket->physicalAddress, currentClockCycle);
 			}
 
@@ -443,6 +445,7 @@ void MemoryController::update()
 
 				break;
 			case PRECHARGE:
+				std::cout<<"xxxxxxxxxxxxxx   poppedBuspacket:PRECHARGE"<<std::endl;
 				bankStates[rank][bank].currentBankState = Precharging;
 				bankStates[rank][bank].lastCommand = PRECHARGE;
 				bankStates[rank][bank].stateChangeCountdown = tRP;
@@ -450,6 +453,7 @@ void MemoryController::update()
 
 				break;
 			case REFRESH:
+				std::cout<<"xxxxxxxxxxxxxx   poppedBuspacket:REFRESH"<<std::endl;
 				//add energy to account for total
 				if (DEBUG_POWER)
 				{
@@ -681,7 +685,9 @@ void MemoryController::update()
 				unsigned chan,rank,bank,row,col;
 				addressMapping(returnTransaction[0]->address,chan,rank,bank,row,col);
 				insertHistogram(currentClockCycle-pendingReadTransactions[i]->timeAdded,rank,bank);
-				//return latency
+				//return latency,
+				//taohi:Macro RETURN_TRANSACTIONS in main() affected Callback to CPU or not.
+				//taohi:insertHistogram already got the statistic at CPU's side,no need to call return to CPU.
 				returnReadData(pendingReadTransactions[i]);
 
 				delete pendingReadTransactions[i];
@@ -843,8 +849,8 @@ void MemoryController::printStats(bool finalStats)
 	cout.setf(ios::fixed,ios::floatfield);
 #endif
 
-	PRINT( " =======================================================" );
-	PRINT( " ============== Printing Statistics [id:"<<parentMemorySystem->systemID<<"]==============" );
+	PRINT( " ===================MC->printStats Called===================" );
+	PRINT( " ============ memorySystem->channels["<<parentMemorySystem->systemID<<"]============" );
 	PRINTN( "   Total Return Transactions : " << totalTransactions );
 	PRINT( " ("<<totalBytesTransferred <<" bytes) aggregate average bandwidth "<<totalBandwidth<<"GB/s");
 
@@ -852,7 +858,7 @@ void MemoryController::printStats(bool finalStats)
 	for (size_t r=0;r<NUM_RANKS;r++)
 	{
 
-		PRINT( "      -Rank   "<<r<<" : ");
+		PRINT( "-Rank "<<r<<" : ");
 		PRINTN( "        -Reads  : " << totalReadsPerRank[r]);
 		PRINT( " ("<<totalReadsPerRank[r] * bytesPerTransaction<<" bytes)");
 		PRINTN( "        -Writes : " << totalWritesPerRank[r]);
@@ -874,12 +880,12 @@ void MemoryController::printStats(bool finalStats)
 			(*parentMemorySystem->ReportPower)(backgroundPower[r],burstPower[r],refreshPower[r],actprePower[r]);
 		}
 
-		PRINT( " == Power Data for Rank        " << r );
-		PRINT( "   Average Power (watts)     : " << averagePower[r] );
-		PRINT( "     -Background (watts)     : " << backgroundPower[r] );
-		PRINT( "     -Act/Pre    (watts)     : " << actprePower[r] );
-		PRINT( "     -Burst      (watts)     : " << burstPower[r]);
-		PRINT( "     -Refresh    (watts)     : " << refreshPower[r] );
+		PRINT( "         ==Power Data Rank " << r <<" ==");
+		PRINT( "         Average Power (watts)     : " << averagePower[r] );
+		PRINT( "           -Background (watts)     : " << backgroundPower[r] );
+		PRINT( "           -Act/Pre    (watts)     : " << actprePower[r] );
+		PRINT( "           -Burst      (watts)     : " << burstPower[r]);
+		PRINT( "           -Refresh    (watts)     : " << refreshPower[r] );
 
 		if (VIS_FILE_OUTPUT)
 		{
@@ -910,7 +916,8 @@ void MemoryController::printStats(bool finalStats)
 	// only print the latency histogram at the end of the simulation since it clogs the output too much to print every epoch
 	if (finalStats)
 	{
-		PRINT( " ---  Latency list ("<<latencies.size()<<")");
+		PRINT( " ------------------ End of simulation-------------------------");
+		PRINT( "  Latency list ("<<latencies.size()<<")");
 		PRINT( "       [lat] : #");
 		if (VIS_FILE_OUTPUT)
 		{
@@ -942,7 +949,7 @@ void MemoryController::printStats(bool finalStats)
 	}
 
 
-	PRINT(endl<< " == Pending Transactions : "<<pendingReadTransactions.size()<<" ("<<currentClockCycle<<")==");
+	PRINT(endl<< " == Pending Transactions : "<<pendingReadTransactions.size()<<" ("<<currentClockCycle<<")=="<<endl);
 	/*
 	for(size_t i=0;i<pendingReadTransactions.size();i++)
 		{

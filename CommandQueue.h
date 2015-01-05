@@ -90,8 +90,8 @@ private:
 
 	unsigned refreshRank;
 	bool refreshWaiting;
-
-	vector< vector<unsigned> > tFAWCountdown;
+//taohi added.
+	//vector< vector<unsigned> > tFAWCountdown;
 	vector< vector<unsigned> > rowAccessCounters;
 
 	bool sendAct;

@@ -107,7 +107,6 @@ MemorySystem::MemorySystem(unsigned id, unsigned int megsOfMemory, CSVWriter &cs
 	The only way this could run into problems is if TOTAL_STORAGE < PER_RANK_STORAGE,
 	which could happen for very dense parts.
 	*********************/
-
 	// number of bytes per rank
 	unsigned long megsOfStoragePerRank = ((((long long)NUM_ROWS * (NUM_COLS * DEVICE_WIDTH) * NUM_BANKS) * ((long long)JEDEC_DATA_BUS_BITS / DEVICE_WIDTH)) / 8) >> 20;
 
@@ -126,6 +125,10 @@ MemorySystem::MemorySystem(unsigned id, unsigned int megsOfMemory, CSVWriter &cs
 	TOTAL_STORAGE = (NUM_RANKS * megsOfStoragePerRank); 
 
 	DEBUG("CH. " <<systemID<<" TOTAL_STORAGE : "<< TOTAL_STORAGE << "MB | "<<NUM_RANKS<<" Ranks | "<< NUM_DEVICES <<" Devices per rank");
+    std::cout<<"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"<<std::endl;
+    std::cout<<"ChannelID:"<<systemID<<" TOTAL_STORAGE:"<< TOTAL_STORAGE << "MB  "<<"NUM_RANKS:"<<NUM_RANKS<<" NUM_DEVICE/RANK:"<<NUM_DEVICES<<std::endl; 
+    std::cout<<"NUM_BANKS:"<<NUM_BANKS<<" NUM_ROWS:"<<NUM_ROWS<<" NUM_COLS:"<<NUM_COLS<<std::endl;
+    std::cout<<"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"<<std::endl<<std::endl;
 
 
 	memoryController = new MemoryController(this, csvOut, dramsim_log);

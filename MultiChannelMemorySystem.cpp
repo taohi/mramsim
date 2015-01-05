@@ -481,9 +481,9 @@ void MultiChannelMemorySystem::printStats(bool finalStats) {
 	(*csvOut) << "ms" <<currentClockCycle * tCK * 1E-6; 
 	for (size_t i=0; i<NUM_CHANS; i++)
 	{
-		PRINT("==== Channel ["<<i<<"] ====");
+		PRINT("////MultichannelMemorySystem:Channel ["<<i<<"]->printStats started////");
 		channels[i]->printStats(finalStats); 
-		PRINT("//// Channel ["<<i<<"] ////");
+		PRINT("////MultichannelMemorySystem:Channel ["<<i<<"]->printStats ended. ////");
 	}
 	csvOut->finalize();
 }
