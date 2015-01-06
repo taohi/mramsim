@@ -93,7 +93,7 @@ MemoryController::MemoryController(MemorySystem *parent, CSVWriter &csvOut_, ost
 
 	writeDataCountdown.reserve(NUM_RANKS);
 	writeDataToSend.reserve(NUM_RANKS);
-	refreshCountdown.reserve(NUM_RANKS);
+//taohi	refreshCountdown.reserve(NUM_RANKS);
 
 	//Power related packets
 	backgroundEnergy = vector <uint64_t >(NUM_RANKS,0);
@@ -103,11 +103,13 @@ MemoryController::MemoryController(MemorySystem *parent, CSVWriter &csvOut_, ost
 
 	totalEpochLatency = vector<uint64_t> (NUM_RANKS*NUM_BANKS,0);
 
+/*taohi remove refresh
 	//staggers when each rank is due for a refresh
 	for (size_t i=0;i<NUM_RANKS;i++)
 	{
 		refreshCountdown.push_back((int)((REFRESH_PERIOD/tCK)/NUM_RANKS)*(i+1));
 	}
+*/
 }
 
 //get a bus packet from either data or cmd bus
@@ -260,7 +262,8 @@ void MemoryController::update()
 			writeDataToSend.erase(writeDataToSend.begin());
 		}
 	}
-
+//taohi remove refresh from DRAM
+/*
 	//if its time for a refresh issue a refresh
 	// else pop from command queue if it's not empty
 	if (refreshCountdown[refreshRank]==0)
@@ -279,6 +282,7 @@ void MemoryController::update()
 	{
 		(*ranks)[refreshRank]->refreshWaiting = true;
 	}
+*/
 
 	//pass a pointer to a poppedBusPacket
 
@@ -704,12 +708,14 @@ void MemoryController::update()
 		delete returnTransaction[0];
 		returnTransaction.erase(returnTransaction.begin());
 	}
-
+	
+/*taohi remove refresh
 	//decrement refresh counters
 	for (size_t i=0;i<NUM_RANKS;i++)
 	{
 		refreshCountdown[i]--;
 	}
+*/
 
 	//
 	//print debug
@@ -918,7 +924,6 @@ void MemoryController::printStats(bool finalStats)
 	{
 		PRINT( " ------------------ End of simulation-------------------------");
 		PRINT( "  Latency list ("<<latencies.size()<<")");
-		PRINT( "       [lat] : #");
 		if (VIS_FILE_OUTPUT)
 		{
 			csvOut.getOutputStream() << "!!HISTOGRAM_DATA"<<endl;
@@ -927,7 +932,8 @@ void MemoryController::printStats(bool finalStats)
 		map<unsigned,unsigned>::iterator it; //
 		for (it=latencies.begin(); it!=latencies.end(); it++)
 		{
-			PRINT( "       ["<< it->first <<"-"<<it->first+(HISTOGRAM_BIN_SIZE-1)<<"] : "<< it->second );
+			PRINT( it->first <<":"<< it->second );
+			//PRINT( "       ["<< it->first <<"-"<<it->first+(HISTOGRAM_BIN_SIZE-1)<<"] : "<< it->second );
 			if (VIS_FILE_OUTPUT)
 			{
 				csvOut.getOutputStream() << it->first <<"="<< it->second << endl;

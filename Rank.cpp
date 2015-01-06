@@ -93,6 +93,7 @@ void Rank::receiveFromBus(BusPacket *packet)
 
 	switch (packet->busPacketType)
 	{
+/*taohi	
 	case READ:
 		//make sure a read is allowed
 		if (bankStates[packet->bank].currentBankState != RowActive ||
@@ -121,6 +122,7 @@ void Rank::receiveFromBus(BusPacket *packet)
 		readReturnPacket.push_back(packet);
 		readReturnCountdown.push_back(RL);
 		break;
+*/
 	case READ_P:
 		//make sure a read is allowed
 		if (bankStates[packet->bank].currentBankState != RowActive ||
@@ -151,6 +153,7 @@ void Rank::receiveFromBus(BusPacket *packet)
 		readReturnPacket.push_back(packet);
 		readReturnCountdown.push_back(RL);
 		break;
+/*taohi
 	case WRITE:
 		//make sure a write is allowed
 		if (bankStates[packet->bank].currentBankState != RowActive ||
@@ -176,6 +179,7 @@ void Rank::receiveFromBus(BusPacket *packet)
 		incomingWriteColumn = packet->column;
 		delete(packet);
 		break;
+*/
 	case WRITE_P:
 		//make sure a write is allowed
 		if (bankStates[packet->bank].currentBankState != RowActive ||

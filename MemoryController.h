@@ -83,7 +83,7 @@ private:
 
 	CommandQueue commandQueue;
 	BusPacket *poppedBusPacket;
-	vector<unsigned>refreshCountdown;
+//	vector<unsigned>refreshCountdown;
 	vector<BusPacket *> writeDataToSend;
 	vector<unsigned> writeDataCountdown;
 	vector<Transaction *> returnTransaction;
