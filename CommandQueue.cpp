@@ -201,6 +201,7 @@ bool CommandQueue::pop(BusPacket **busPacket)
 	if (rowBufferPolicy==ClosePage)
 	{
 		bool sendingREF = false;
+/*taohi
 		//if the memory controller set the flags signaling that we need to issue a refresh
 		if (refreshWaiting)
 		{
@@ -258,7 +259,7 @@ bool CommandQueue::pop(BusPacket **busPacket)
 				sendingREF = true;
 			}
 		} // refreshWaiting
-
+*/
 		//if we're not sending a REF, proceed as normal
 		if (!sendingREF)
 		{
@@ -336,6 +337,7 @@ bool CommandQueue::pop(BusPacket **busPacket)
 			if (!foundIssuable) return false;
 		}
 	}
+/*taohi
 	else if (rowBufferPolicy==OpenPage)
 	{
 		bool sendingREForPRE = false;
@@ -541,6 +543,7 @@ bool CommandQueue::pop(BusPacket **busPacket)
 			}
 		}
 	}
+*/
 
 	//sendAct is flag used for posted-cas
 	//  posted-cas is enabled when AL>0
@@ -659,7 +662,7 @@ bool CommandQueue::isIssuable(BusPacket *busPacket)
                 return false;
             }
             break;
-        case WRITE:
+       // case WRITE:
         case WRITE_P:
             if (bankStates[busPacket->rank][busPacket->bank].currentBankState == RowActive &&
                     currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextWrite &&
@@ -674,7 +677,7 @@ bool CommandQueue::isIssuable(BusPacket *busPacket)
             }
             break;
         case READ_P:
-        case READ:
+        //case READ:
             if (bankStates[busPacket->rank][busPacket->bank].currentBankState == RowActive &&
                     currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextRead &&
                     busPacket->row == bankStates[busPacket->rank][busPacket->bank].openRowAddress &&

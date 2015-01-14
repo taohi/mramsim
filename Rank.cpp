@@ -255,6 +255,7 @@ void Rank::receiveFromBus(BusPacket *packet)
 		bankStates[packet->bank].nextActivate = max(bankStates[packet->bank].nextActivate, currentClockCycle + tRP);
 		delete(packet); 
 		break;
+/*taohi
 	case REFRESH:
 		refreshWaiting = false;
 		for (size_t i=0;i<NUM_BANKS;i++)
@@ -268,6 +269,7 @@ void Rank::receiveFromBus(BusPacket *packet)
 		}
 		delete(packet); 
 		break;
+*/
 	case DATA:
 		// TODO: replace this check with something that works?
 		/*

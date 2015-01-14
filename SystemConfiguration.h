@@ -53,7 +53,7 @@
 
 //number of latencies per bucket in the latency histogram
 //TODO: move to system ini file
-#define HISTOGRAM_BIN_SIZE 10
+#define HISTOGRAM_BIN_SIZE 50
 
 extern std::ofstream cmd_verify_out; //used by BusPacket.cpp if VERIFICATION_OUTPUT is enabled
 //extern std::ofstream visDataOut;
@@ -117,6 +117,10 @@ extern unsigned NUM_DEVICES;
 #define WRITE_AUTOPRE_DELAY (WL+BL/2+tWR+tRP)
 #define WRITE_TO_READ_DELAY_B (WL+BL/2+tWTR) //interbank
 #define WRITE_TO_READ_DELAY_R (WL+BL/2+tRTRS-RL) //interrank
+
+//taohi
+#define MRAM_READ_TIME	24 //35ns/1.5ns=24Cycles.
+#define MRAM_WRITE_TIME	24 //35ns/1.5ns=24Cycles
 
 extern unsigned JEDEC_DATA_BUS_BITS;
 

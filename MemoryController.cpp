@@ -180,7 +180,7 @@ void MemoryController::update()
 						bankStates[i][j].stateChangeCountdown = tRP;
 						break;
 
-					case REFRESH:
+//taohi				case REFRESH:
 					case PRECHARGE:
 						bankStates[i][j].currentBankState = Idle;
 						break;
@@ -213,8 +213,8 @@ void MemoryController::update()
 			//inform upper levels that a write is done
 			if (parentMemorySystem->WriteDataDone!=NULL)
 			{
-				PRINT("WriteDataDone Called.");
 				//taohi:No Callback function is called.Because we didn't register.
+				PRINT("WriteDataDone Called.");
 				(*parentMemorySystem->WriteDataDone)(parentMemorySystem->systemID,outgoingDataPacket->physicalAddress, currentClockCycle);
 			}
 
@@ -262,7 +262,7 @@ void MemoryController::update()
 			writeDataToSend.erase(writeDataToSend.begin());
 		}
 	}
-//taohi remove refresh from DRAM
+//taohi:remove refresh from DRAM
 /*
 	//if its time for a refresh issue a refresh
 	// else pop from command queue if it's not empty
@@ -307,7 +307,7 @@ void MemoryController::update()
 		switch (poppedBusPacket->busPacketType)
 		{
 			case READ_P:
-			case READ:
+//			case READ:
 				//add energy to account for total
 				if (DEBUG_POWER)
 				{
@@ -318,11 +318,12 @@ void MemoryController::update()
 				{
 					//Don't bother setting next read or write times because the bank is no longer active
 					//bankStates[rank][bank].currentBankState = Idle;
-					bankStates[rank][bank].nextActivate = max(currentClockCycle + READ_AUTOPRE_DELAY,
-							bankStates[rank][bank].nextActivate);
+					//bankStates[rank][bank].nextActivate = max(currentClockCycle + MRAM_READ_TIME,	bankStates[rank][bank].nextActivate);
+					bankStates[rank][bank].nextActivate = max(currentClockCycle + READ_AUTOPRE_DELAY,bankStates[rank][bank].nextActivate);
 					bankStates[rank][bank].lastCommand = READ_P;
 					bankStates[rank][bank].stateChangeCountdown = READ_TO_PRE_DELAY;
 				}
+/*taohi				
 				else if (poppedBusPacket->busPacketType == READ)
 				{
 					bankStates[rank][bank].nextPrecharge = max(currentClockCycle + READ_TO_PRE_DELAY,
@@ -330,6 +331,8 @@ void MemoryController::update()
 					bankStates[rank][bank].lastCommand = READ;
 
 				}
+*/
+
 
 				for (size_t i=0;i<NUM_RANKS;i++)
 				{
@@ -365,14 +368,16 @@ void MemoryController::update()
 
 				break;
 			case WRITE_P:
-			case WRITE:
+//			case WRITE:
 				if (poppedBusPacket->busPacketType == WRITE_P) 
 				{
-					bankStates[rank][bank].nextActivate = max(currentClockCycle + WRITE_AUTOPRE_DELAY,
-							bankStates[rank][bank].nextActivate);
+				bankStates[rank][bank].nextActivate = max(currentClockCycle + WRITE_AUTOPRE_DELAY,bankStates[rank][bank].nextActivate);
+//taohi			bankStates[rank][bank].nextActivate = max(currentClockCycle + MRAM_WRITE_TIME,bankStates[rank][bank].nextActivate);
+
 					bankStates[rank][bank].lastCommand = WRITE_P;
 					bankStates[rank][bank].stateChangeCountdown = WRITE_TO_PRE_DELAY;
 				}
+/*taohi
 				else if (poppedBusPacket->busPacketType == WRITE)
 				{
 					bankStates[rank][bank].nextPrecharge = max(currentClockCycle + WRITE_TO_PRE_DELAY,
@@ -380,13 +385,14 @@ void MemoryController::update()
 					bankStates[rank][bank].lastCommand = WRITE;
 				}
 
-
+*/
 				//add energy to account for total
 				if (DEBUG_POWER)
 				{
 					PRINT(" ++ Adding Write energy to total energy");
 				}
 				burstEnergy[rank] += (IDD4W - IDD3N) * BL/2 * NUM_DEVICES;
+
 
 				for (size_t i=0;i<NUM_RANKS;i++)
 				{
@@ -448,6 +454,7 @@ void MemoryController::update()
 				}
 
 				break;
+/*taohi
 			case PRECHARGE:
 				std::cout<<"xxxxxxxxxxxxxx   poppedBuspacket:PRECHARGE"<<std::endl;
 				bankStates[rank][bank].currentBankState = Precharging;
@@ -456,13 +463,14 @@ void MemoryController::update()
 				bankStates[rank][bank].nextActivate = max(currentClockCycle + tRP, bankStates[rank][bank].nextActivate);
 
 				break;
+
 			case REFRESH:
 				std::cout<<"xxxxxxxxxxxxxx   poppedBuspacket:REFRESH"<<std::endl;
 				//add energy to account for total
 				if (DEBUG_POWER)
 				{
 					PRINT(" ++ Adding Refresh energy to total energy");
-				}
+				} 
 				refreshEnergy[rank] += (IDD5 - IDD3N) * tRFC * NUM_DEVICES;
 
 				for (size_t i=0;i<NUM_BANKS;i++)
@@ -474,6 +482,7 @@ void MemoryController::update()
 				}
 
 				break;
+*/
 			default:
 				ERROR("== Error - Popped a command we shouldn't have of type : " << poppedBusPacket->busPacketType);
 				exit(0);
@@ -665,6 +674,7 @@ void MemoryController::update()
 			}
 		}
 	}
+
 
 	//check for outstanding data to return to the CPU
 	if (returnTransaction.size()>0)
