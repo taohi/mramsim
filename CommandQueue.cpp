@@ -273,7 +273,9 @@ bool CommandQueue::pop(BusPacket **busPacket)
 				//	also make sure a rank isn't waiting for a refresh
 				//	if a rank is waiting for a refesh, don't issue anything to it until the
 				//		refresh logic above has sent one out (ie, letting banks close)
-				if (!queue.empty() && !((nextRank == refreshRank) && refreshWaiting))
+//				if (!queue.empty() && !((nextRank == refreshRank) && refreshWaiting))
+				if (!queue.empty())
+
 				{
 					if (queuingStructure == PerRank)
 					{
@@ -642,32 +644,9 @@ bool CommandQueue::isIssuable(BusPacket *busPacket)
 {
 	switch (busPacket->busPacketType)
 	{
-        case REFRESH:
-
-            break;
-        case ACTIVATE:
-			/*
-            if ((bankStates[busPacket->rank][busPacket->bank].currentBankState == Idle ||
-                        bankStates[busPacket->rank][busPacket->bank].currentBankState == Refreshing) &&
-                    currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextActivate &&
-                    tFAWCountdown[busPacket->rank].size() < 4)
-             */
-              if ((bankStates[busPacket->rank][busPacket->bank].currentBankState == Idle ||bankStates[busPacket->rank][busPacket->bank].currentBankState == Refreshing) &&
-                    currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextActivate)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-            break;
-       // case WRITE:
         case WRITE_P:
-            if (bankStates[busPacket->rank][busPacket->bank].currentBankState == RowActive &&
-                    currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextWrite &&
-                    busPacket->row == bankStates[busPacket->rank][busPacket->bank].openRowAddress &&
-                    rowAccessCounters[busPacket->rank][busPacket->bank] < TOTAL_ROW_ACCESSES)
+            if (bankStates[busPacket->rank][busPacket->bank].currentBankState == Idle &&
+                    currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextWrite)
             {
                 return true;
             }
@@ -677,22 +656,8 @@ bool CommandQueue::isIssuable(BusPacket *busPacket)
             }
             break;
         case READ_P:
-        //case READ:
-            if (bankStates[busPacket->rank][busPacket->bank].currentBankState == RowActive &&
-                    currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextRead &&
-                    busPacket->row == bankStates[busPacket->rank][busPacket->bank].openRowAddress &&
-                    rowAccessCounters[busPacket->rank][busPacket->bank] < TOTAL_ROW_ACCESSES)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-            break;
-        case PRECHARGE:
-            if (bankStates[busPacket->rank][busPacket->bank].currentBankState == RowActive &&
-                    currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextPrecharge)
+            if (bankStates[busPacket->rank][busPacket->bank].currentBankState == Idle &&
+                    currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextRead)
             {
                 return true;
             }

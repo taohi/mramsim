@@ -51,6 +51,7 @@ namespace DRAMSim
 enum CurrentBankState
 {
 	Idle,
+	Busy,
 	RowActive,
 	Precharging,
 	Refreshing,

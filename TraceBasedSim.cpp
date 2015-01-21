@@ -543,6 +543,9 @@ int main(int argc, char **argv)
 
 	for (size_t i=0;i<numCycles;i++)
 	{
+//		std::cout<<"=============================\n";
+//		std::cout<<"Cycle "<<i<<" begins,waiting to continue."<<std::endl;
+		//getchar();
 		if (!pendingTrans)
 		{
 			if (!traceFile.eof())
