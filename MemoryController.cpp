@@ -299,13 +299,6 @@ void MemoryController::update()
 		switch (poppedBusPacket->busPacketType)
 		{
 			case READ_P:
-//			case READ:
-				//add energy to account for total
-//				if (DEBUG_POWER)
-//				{
-//					PRINT(" ++ Adding Read energy to total energy");
-//				}
-//				burstEnergy[rank] += (IDD4R - IDD3N) * BL/2 * NUM_DEVICES;
 				if (poppedBusPacket->busPacketType == READ_P) 
 				{
 					//Don't bother setting next read or write times because the bank is no longer active
@@ -656,12 +649,12 @@ void MemoryController::printStats(bool finalStats)
 			(*parentMemorySystem->ReportPower)(backgroundPower[r],burstPower[r],refreshPower[r],actprePower[r]);
 		}
 
-		PRINT( "         ==Power Data Rank " << r <<" ==");
-		PRINT( "         Average Power (watts)     : " << averagePower[r] );
-		PRINT( "           -Background (watts)     : " << backgroundPower[r] );
-		PRINT( "           -Act/Pre    (watts)     : " << actprePower[r] );
-		PRINT( "           -Burst      (watts)     : " << burstPower[r]);
-		PRINT( "           -Refresh    (watts)     : " << refreshPower[r] );
+//		PRINT( "         ==Power Data Rank " << r <<" ==");
+//		PRINT( "         Average Power (watts)     : " << averagePower[r] );
+//		PRINT( "           -Background (watts)     : " << backgroundPower[r] );
+//		PRINT( "           -Act/Pre    (watts)     : " << actprePower[r] );
+//		PRINT( "           -Burst      (watts)     : " << burstPower[r]);
+//		PRINT( "           -Refresh    (watts)     : " << refreshPower[r] );
 
 		if (VIS_FILE_OUTPUT)
 		{
@@ -714,10 +707,10 @@ void MemoryController::printStats(bool finalStats)
 			PRINT( " --- Grand Total Bank usage list");
 			for (size_t i=0;i<NUM_RANKS;i++)
 			{
-				PRINT("Rank "<<i<<":"); 
+//				PRINT("Rank "<<i<<":"); 
 				for (size_t j=0;j<NUM_BANKS;j++)
 				{
-					PRINT( "  b"<<j<<": "<<grandTotalBankAccesses[SEQUENTIAL(i,j)]);
+					PRINT( "r"<<i<<"-b"<<j<<":"<<grandTotalBankAccesses[SEQUENTIAL(i,j)]);
 				}
 			}
 		}
@@ -725,7 +718,7 @@ void MemoryController::printStats(bool finalStats)
 	}
 
 
-	PRINT(endl<< " == Pending Transactions : "<<pendingReadTransactions.size()<<" ("<<currentClockCycle<<")=="<<endl);
+	PRINT(endl<< " == Pending Transactions : "<<pendingReadTransactions.size()<<"  currentCycle:("<<currentClockCycle<<")=="<<endl);
 	/*
 	for(size_t i=0;i<pendingReadTransactions.size();i++)
 		{
