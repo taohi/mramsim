@@ -85,38 +85,11 @@ void addressMapping(uint64_t physicalAddress, unsigned &newTransactionChan, unsi
 				<< " colHigh:"<<colHighBitWidth<<" off:"<<byteOffsetWidth 
 				<< " Total:"<< (channelBitWidth + rankBitWidth + bankBitWidth + rowBitWidth + colLowBitWidth + colHighBitWidth + byteOffsetWidth));
 	}
-
+/*
 	//perform various address mapping schemes
-	if (addressMappingScheme == Scheme1)
-	{
-		//chan:rank:row:col:bank
-		tempA = physicalAddress;
-		physicalAddress = physicalAddress >> bankBitWidth;
-		tempB = physicalAddress << bankBitWidth;
-		newTransactionBank = tempA ^ tempB;
 
-		tempA = physicalAddress;
-		physicalAddress = physicalAddress >> colHighBitWidth;
-		tempB = physicalAddress << colHighBitWidth;
-		newTransactionColumn = tempA ^ tempB;
-
-		tempA = physicalAddress;
-		physicalAddress = physicalAddress >> rowBitWidth;
-		tempB = physicalAddress << rowBitWidth;
-		newTransactionRow = tempA ^ tempB;
-
-		tempA = physicalAddress;
-		physicalAddress = physicalAddress >> rankBitWidth;
-		tempB = physicalAddress << rankBitWidth;
-		newTransactionRank = tempA ^ tempB;
-
-		tempA = physicalAddress;
-		physicalAddress = physicalAddress >> channelBitWidth;
-		tempB = physicalAddress << channelBitWidth;
-		newTransactionChan = tempA ^ tempB;
-
-	}
-	else if (addressMappingScheme == Scheme2)
+	*/
+	if (addressMappingScheme == AddrMap1)
 	{
 		//chan:row:col:bank:rank
 		tempA = physicalAddress;
@@ -145,6 +118,7 @@ void addressMapping(uint64_t physicalAddress, unsigned &newTransactionChan, unsi
 		newTransactionChan = tempA ^ tempB;
 
 	}
+	/*
 	else if (addressMappingScheme == Scheme3)
 	{
 		//chan:rank:bank:col:row
@@ -174,36 +148,8 @@ void addressMapping(uint64_t physicalAddress, unsigned &newTransactionChan, unsi
 		newTransactionChan = tempA ^ tempB;
 
 	}
-	else if (addressMappingScheme == Scheme4)
-	{
-		//chan:rank:bank:row:col
-		tempA = physicalAddress;
-		physicalAddress = physicalAddress >> colHighBitWidth;
-		tempB = physicalAddress << colHighBitWidth;
-		newTransactionColumn = tempA ^ tempB;
-
-		tempA = physicalAddress;
-		physicalAddress = physicalAddress >> rowBitWidth;
-		tempB = physicalAddress << rowBitWidth;
-		newTransactionRow = tempA ^ tempB;
-
-		tempA = physicalAddress;
-		physicalAddress = physicalAddress >> bankBitWidth;
-		tempB = physicalAddress << bankBitWidth;
-		newTransactionBank = tempA ^ tempB;
-
-		tempA = physicalAddress;
-		physicalAddress = physicalAddress >> rankBitWidth;
-		tempB = physicalAddress << rankBitWidth;
-		newTransactionRank = tempA ^ tempB;
-
-		tempA = physicalAddress;
-		physicalAddress = physicalAddress >> channelBitWidth;
-		tempB = physicalAddress << channelBitWidth;
-		newTransactionChan = tempA ^ tempB;
-
-	}
-	else if (addressMappingScheme == Scheme5)
+*/
+	else if (addressMappingScheme == AddrMap2)
 	{
 		//chan:row:col:rank:bank
 
@@ -234,7 +180,7 @@ void addressMapping(uint64_t physicalAddress, unsigned &newTransactionChan, unsi
 
 
 	}
-	else if (addressMappingScheme == Scheme6)
+	else if (addressMappingScheme == AddrMap3)
 	{
 		//chan:row:bank:rank:col
 
@@ -265,14 +211,18 @@ void addressMapping(uint64_t physicalAddress, unsigned &newTransactionChan, unsi
 
 
 	}
-	// clone of scheme 5, but channel moved to lower bits
-	else if (addressMappingScheme == Scheme7)
+	else if (addressMappingScheme == AddrMap4)
 	{
-		//row:col:rank:bank:chan
+		//chan:rank:bank:row:col
 		tempA = physicalAddress;
-		physicalAddress = physicalAddress >> channelBitWidth;
-		tempB = physicalAddress << channelBitWidth;
-		newTransactionChan = tempA ^ tempB;
+		physicalAddress = physicalAddress >> colHighBitWidth;
+		tempB = physicalAddress << colHighBitWidth;
+		newTransactionColumn = tempA ^ tempB;
+
+		tempA = physicalAddress;
+		physicalAddress = physicalAddress >> rowBitWidth;
+		tempB = physicalAddress << rowBitWidth;
+		newTransactionRow = tempA ^ tempB;
 
 		tempA = physicalAddress;
 		physicalAddress = physicalAddress >> bankBitWidth;
@@ -285,6 +235,20 @@ void addressMapping(uint64_t physicalAddress, unsigned &newTransactionChan, unsi
 		newTransactionRank = tempA ^ tempB;
 
 		tempA = physicalAddress;
+		physicalAddress = physicalAddress >> channelBitWidth;
+		tempB = physicalAddress << channelBitWidth;
+		newTransactionChan = tempA ^ tempB;
+
+	}
+	else if (addressMappingScheme == AddrMap5)
+	{
+		//chan:rank:row:col:bank
+		tempA = physicalAddress;
+		physicalAddress = physicalAddress >> bankBitWidth;
+		tempB = physicalAddress << bankBitWidth;
+		newTransactionBank = tempA ^ tempB;
+
+		tempA = physicalAddress;
 		physicalAddress = physicalAddress >> colHighBitWidth;
 		tempB = physicalAddress << colHighBitWidth;
 		newTransactionColumn = tempA ^ tempB;
@@ -294,8 +258,17 @@ void addressMapping(uint64_t physicalAddress, unsigned &newTransactionChan, unsi
 		tempB = physicalAddress << rowBitWidth;
 		newTransactionRow = tempA ^ tempB;
 
-	}
+		tempA = physicalAddress;
+		physicalAddress = physicalAddress >> rankBitWidth;
+		tempB = physicalAddress << rankBitWidth;
+		newTransactionRank = tempA ^ tempB;
 
+		tempA = physicalAddress;
+		physicalAddress = physicalAddress >> channelBitWidth;
+		tempB = physicalAddress << channelBitWidth;
+		newTransactionChan = tempA ^ tempB;
+
+	}
 	else
 	{
 		ERROR("== Error - Unknown Address Mapping Scheme");

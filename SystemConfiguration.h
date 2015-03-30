@@ -146,13 +146,11 @@ enum TraceType
 
 enum AddressMappingScheme
 {
-	Scheme1,
-	Scheme2,
-	Scheme3,
-	Scheme4,
-	Scheme5,
-	Scheme6,
-	Scheme7
+	AddrMap1,
+	AddrMap2,
+	AddrMap3,
+	AddrMap4,
+	AddrMap5,
 };
 
 // used in MemoryController and CommandQueue

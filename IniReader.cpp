@@ -464,66 +464,42 @@ bool IniReader::CheckIfAllSet()
 }
 void IniReader::InitEnumsFromStrings()
 {
-	if (ADDRESS_MAPPING_SCHEME == "scheme1")
+	if (ADDRESS_MAPPING_SCHEME == "AddrMap1")
 	{
-		addressMappingScheme = Scheme1;
+		addressMappingScheme = AddrMap1;
 		if (DEBUG_INI_READER) 
 		{
 			DEBUG("ADDR SCHEME: 1");
 		}
 	}
-	else if (ADDRESS_MAPPING_SCHEME == "scheme2")
+	else if (ADDRESS_MAPPING_SCHEME == "AddrMap2")
 	{
-		addressMappingScheme = Scheme2;
+		addressMappingScheme = AddrMap2;
 		if (DEBUG_INI_READER) 
 		{
 			DEBUG("ADDR SCHEME: 2");
 		}
 	}
-	else if (ADDRESS_MAPPING_SCHEME == "scheme3")
+	else if (ADDRESS_MAPPING_SCHEME == "AddrMap3")
 	{
-		addressMappingScheme = Scheme3;
+		addressMappingScheme = AddrMap3;
 		if (DEBUG_INI_READER) 
 		{
 			DEBUG("ADDR SCHEME: 3");
 		}
 	}
-	else if (ADDRESS_MAPPING_SCHEME == "scheme4")
+	else if (ADDRESS_MAPPING_SCHEME == "AddrMap4")
 	{
-		addressMappingScheme = Scheme4;
+		addressMappingScheme = AddrMap4;
 		if (DEBUG_INI_READER) 
 		{
 			DEBUG("ADDR SCHEME: 4");
 		}
 	}
-	else if (ADDRESS_MAPPING_SCHEME == "scheme5")
-	{
-		addressMappingScheme = Scheme5;
-		if (DEBUG_INI_READER) 
-		{
-			DEBUG("ADDR SCHEME: 5");
-		}
-	}
-	else if (ADDRESS_MAPPING_SCHEME == "scheme6")
-	{
-		addressMappingScheme = Scheme6;
-		if (DEBUG_INI_READER) 
-		{
-			DEBUG("ADDR SCHEME: 6");
-		}
-	}
-	else if (ADDRESS_MAPPING_SCHEME == "scheme7")
-	{
-		addressMappingScheme = Scheme7;
-		if (DEBUG_INI_READER) 
-		{
-			DEBUG("ADDR SCHEME: 7");
-		}
-	}
 	else
 	{
-		cout << "WARNING: unknown address mapping scheme '"<<ADDRESS_MAPPING_SCHEME<<"'; valid values are 'scheme1'...'scheme7'. Defaulting to scheme1"<<endl;
-		addressMappingScheme = Scheme1;
+		cout << "WARNING: unknown address mapping scheme '"<<ADDRESS_MAPPING_SCHEME<<"'; valid values are 'AddrMap1'...'AddrMap4'. Defaulting to AddrMap1"<<endl;
+		addressMappingScheme = AddrMap1;
 	}
 
 	if (ROW_BUFFER_POLICY == "open_page")
